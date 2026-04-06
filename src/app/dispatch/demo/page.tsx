@@ -149,8 +149,11 @@ function DemoDashboard({ jobs, onSelectJob, onAcceptJob }: {
   const jobList = Object.values(jobs)
   const activeCount = jobList.filter(j => (j.crmStep ?? 0) < 9).length
   const marketplaceJobs = jobList.filter(j => (j.crmStep ?? 0) <= 1)
-  const activeJobs = jobList.filter(j => (j.crmStep ?? 0) >= 2 && (j.crmStep ?? 0) < 9)
-  const doneJobs = jobList.filter(j => (j.crmStep ?? 0) >= 9)
+  const activeJobs = jobList.filter(j => {
+    const step = j.crmStep ?? 0
+    return step >= 2 && (step < 10 || (step === 9 && j.techPhase !== 'departed'))
+  })
+  const doneJobs = jobList.filter(j => (j.crmStep ?? 0) >= 10 || ((j.crmStep ?? 0) >= 9 && j.techPhase === 'departed'))
 
   return (
     <div style={{
@@ -721,6 +724,15 @@ export default function DemoPage() {
     }) as typeof window.fetch
 
     return () => { window.fetch = originalFetch }
+  }, [])
+
+  // Override history.back — in demo, go back to dashboard instead of leaving
+  useEffect(() => {
+    const originalBack = window.history.back.bind(window.history)
+    window.history.back = () => {
+      dispatch({ type: 'BACK_TO_DASHBOARD' })
+    }
+    return () => { window.history.back = originalBack }
   }, [])
 
   // Clean up timeout on unmount
