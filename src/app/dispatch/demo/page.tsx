@@ -761,16 +761,46 @@ export default function DemoPage() {
       return true
     }
 
+    // Invoice — show settlement modal (demo shortcut)
+    if (action === 'issue_invoice') {
+      setShowSettlementModal(true)
+      return true
+    }
+
+    // Work done → need photos first
+    if (action === 'work_done') {
+      dispatch({ type: 'STEP_ACTION', jobId: _jobId, action })
+      setToast('Práce dokončena — nahrajte fotky')
+      return true
+    }
+
     // Standard step action
     dispatch({ type: 'STEP_ACTION', jobId: _jobId, action })
 
     // Auto-approve estimate after 2s delay
     if (action === 'submit_estimate' || (step === 3 && phase === 'diagnostics')) {
-      // First move to estimate_submitted via SUBMIT_ESTIMATE
       dispatch({ type: 'SUBMIT_ESTIMATE', jobId: _jobId })
       autoApproveRef.current = setTimeout(() => {
         dispatch({ type: 'AUTO_APPROVE_ESTIMATE', jobId: _jobId })
       }, 2500)
+      return true
+    }
+
+    // Start work toast
+    if (action === 'start_work') {
+      setToast('Oprava zahájena')
+      return true
+    }
+
+    // En route toast
+    if (action === 'en_route') {
+      setToast('Jste na cestě — GPS sledování aktivní')
+      return true
+    }
+
+    // Arrived toast
+    if (action === 'arrived') {
+      setToast('Příjezd zaznamenán')
       return true
     }
 

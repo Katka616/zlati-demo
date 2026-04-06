@@ -64,6 +64,8 @@ const TRANSITIONS: Record<string, PhaseTransition> = {
 
   // Step 9: zuctovanie
   '9:settlement_review:approve_settlement': { crmStep: 9, techPhase: 'departed', status: 'zuctovanie' },
+  '9:invoice_ready:issue_invoice':          { crmStep: 13, techPhase: 'departed', status: 'uhradene' },
+  '9:departed:completed':                   { crmStep: 13, techPhase: 'departed', status: 'uhradene' },
 }
 
 // ── Initial state ────────────────────────────────────────────────────
