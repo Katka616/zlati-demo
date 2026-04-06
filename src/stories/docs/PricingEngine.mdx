@@ -1,0 +1,147 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Dokumentácia/Cenový Engine" />
+
+# Cenový Engine
+
+Súbor: `src/lib/pricing-engine.ts`
+
+**`pricing-engine.ts` je JEDINÝ zdroj pravdy pre všetky finančné výpočty** v celom systéme. Inline výpočty cien kdekoľvek inde v kóde sú zakázané.
+
+---
+
+## Poistní partneri a cenové pravidlá
+
+| | AXA | Europ Assistance | Security Support |
+|---|---|---|---|
+| Skratka | AXA | EA | SEC |
+| Farba | `#D32F2F` | `#1976D2` | `#E31E24` |
+| Cestovné | Zónové (10/20/30/40/50+ km) | Per-km sadzba | Zónové |
+| Víkendový príplatok | +50 € | Max 50 € celkom | 0 € |
+| Nočný príplatok | +100 € | Zahrnutý v maxime | 0 € |
+| Min. marža ZR | 70 € | 70 € | 70 € |
+
+---
+
+## Sadzby DPH
+
+| Krajina | Práca | Materiál |
+|---|---|---|
+| SK | 23 % | 23 % |
+| CZ | 12 % | 21 % |
+
+---
+
+## Dva cenové momenty
+
+### 1. Odhad (kroky 3–5)
+
+Technik na mieste urobí diagnostiku a odhadne:
+- hodiny práce
+- km cestovného
+- materiál (položky + ceny)
+
+Odhad prechádza schvaľovaním CRM operátora (krok 4) a prípadne klientom (krok 5 — ak je doplatok).
+
+### 2. Zúčtovanie (krok 7)
+
+Po dokončení práce technik potvrdí skutočné:
+- odpracované hodiny
+- najdené km
+- skutočne použitý materiál
+
+Tolerancia odchýlky odhad vs. skutočnosť: **5 %**. Ak je odchýlka väčšia, zákazka ide na cenovú kontrolu.
+
+---
+
+## Výpočtový tok
+
+```
+buildPricingFromDb(jobId)
+  │
+  ├─ Načíta z DB: partner, technik, job_spare_parts, protocol_history, gps_routes
+  │
+  └─► calculatePricing(input: PricingInput)
+        │
+        ├─ Labor:     firstHourRate × 1h + additionalHourRate × (hours - 1)
+        ├─ Travel:    zóna / per-km podľa partnera + počet výjazdov
+        ├─ Materials: suma položiek (payer = 'client' → doplatok klienta)
+        ├─ Emergency: pohotovostný príplatok (víkend/noc podľa partnera)
+        ├─ Margin:    min. marža ZR (70 €)
+        └─► PricingResult
+              ├─ ourInvoice        — čo fakturujeme poisťovni (bez DPH)
+              ├─ clientSurcharge   — doplatok klienta (bez DPH)
+              ├─ techPayout        — čo dostane technik
+              └─ input             — vstupné dáta (sadzby, hodiny, km...)
+```
+
+---
+
+## Kľúčové typy
+
+### `PricingInput`
+```typescript
+{
+  partnerCode: 'AXA' | 'EA' | 'SEC'
+  country: 'SK' | 'CZ'
+  hours: number
+  km: number
+  visits: number
+  materials: { name, quantity, price, payer }[]
+  isWeekend: boolean
+  isNight: boolean
+  firstHourRate: number
+  additionalHourRate: number
+  travelRatePerKm: number
+}
+```
+
+### `PricingResult`
+```typescript
+{
+  laborTotal: number          // práca celkom (bez DPH)
+  travelTotal: number         // cestovné celkom (bez DPH)
+  materialsTotal: number      // materiál celkom (bez DPH)
+  emergencyFee: number        // pohotovostný príplatok (bez DPH)
+  subtotalGross: number       // medzisúčet (bez DPH)
+  clientSurcharge: number     // doplatok klienta (bez DPH)
+  clientSurchargeWithVat: number
+  ourInvoice: number          // faktúra poisťovni (bez DPH)
+  techPayout: number          // platba technikovi (bez DPH)
+  input: PricingInput         // echo vstupných dát (pre faktúru)
+}
+```
+
+---
+
+## Jednotky — KRITICKÉ PRAVIDLO
+
+`pricing-engine.ts` vracia hodnoty v **celých CZK/EUR** (nie haléřoch/centoch).
+
+V admin UI sa ceny konvertujú cez `pricingApiToDisplayPricing()` na **haléře** (×100) pre `fmtCur()`.
+
+```
+fmtCur(haléře) → delí 100, zobrazí správne   ← pre Pricing typ
+fmtEur(celé)   → NEdelí                       ← len pre odhad/techPhase hodnoty
+```
+
+**Nikdy nemiešať haléře a celé hodnoty v jednom výpočte!**
+
+---
+
+## Súvisiace moduly
+
+| Súbor | Účel |
+|---|---|
+| `src/lib/pricing-tables.ts` | Statické tabuľky (sadzby, zóny, DPH) zo ZR_pricing.xlsx |
+| `src/lib/pricingInputBuilder.ts` | `buildPricingFromDb()` — zostavia vstup z DB + volá engine |
+| `src/lib/settlementBuilder.ts` | Vyúčtovanie technika — agreguje návštevy, volá pricing engine |
+| `src/lib/checkSurchargeAlert.ts` | Detekuje ak doplatok prekročil prah |
+| `src/lib/quoteBuilder.ts` | Buduje dáta cenovej ponuky pre klienta |
+| `src/lib/costEstimates.ts` | Hrubé odhady bez kompletných dát (dispatch fáza) |
+
+---
+
+## Bezpečnosť — čo technik nesmie vidieť
+
+`stripInsurerData()` v settlement API odstraňuje `pricingResult` z dát pre technika — technik nevidí marže, ceny poisťovni ani interné kalkulácie ZR.

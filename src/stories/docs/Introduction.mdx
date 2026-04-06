@@ -1,0 +1,69 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Dokumentácia/Úvod" />
+
+# Zlatí Řemeslníci — Dokumentácia
+
+**Zlatí Řemeslníci** (ZR) je mobilná PWA platforma pre poistné havarijné opravy v SR a ČR. Štyri rozhrania zdieľajú jednu kódovú základňu, jednu PostgreSQL databázu a jeden stavový stroj.
+
+---
+
+## Technologický stack
+
+| Vrstva | Technológia |
+|---|---|
+| Frontend | Next.js 14 App Router, TypeScript strict |
+| Databáza | PostgreSQL (raw `pg` pool) — Railway hosting |
+| Auth | JWT (`jose`) v httpOnly cookie, 90 dní |
+| Štýly | CSS custom properties (`globals.css`) — **bez Tailwind, bez CSS modules** |
+| AI | OpenAI GPT-4o (brain agenty, diagnostika, verifikácia opráv) |
+| Notifikácie | Web Push (VAPID), SMS (Bulkgate), CloudTalk |
+| Faktúry | ISDOC 6.0.1 XML, SEPA pain.001.001.03, QR Platba (SPD) |
+
+---
+
+## Štyri rozhrania
+
+### 1. Dispatch App — Technik (`/dispatch/*`)
+Uber-like mobilná PWA pre technikov v teréne. Technik vidí dostupné zákazky na mape, prijíma ich, sleduje stav, fotí a odovzdáva protokol.
+
+### 2. Admin CRM — Operátor (`/admin/*`)
+Plný CRM dispečing pre operátorov. Správa zákaziek, priradenie technikov, cenotvorba, fakturácia, platobné batche, AI signály.
+
+### 3. Klientský portál (`/client/[token]`)
+Token-based pohľad zákazníka bez prihlásenia. Zákazník vidí priebeh v 16 fázových variantoch, môže schváliť doplatok a stiahnuť protokol.
+
+### 4. Servisný protokol (`/protocol/[token]`)
+Token-based sprievodca odovzdaním zákazky. 6 typov protokolov (štandardný, s doplatkom, diagnostika, multi-visit a ďalšie).
+
+---
+
+## Architektúra — prehľad
+
+Každá zmena stavu v celom systéme prechádza cez **`statusEngine.ts`** — centrálny stavový stroj, ktorý mapuje štyri paralelné stavové systémy:
+
+- **CRM kroky** (0–12): `prijem` → `uzavrete`
+- **DB status** (= CrmStepKey): rovnaký kľúč ako CRM krok
+- **Portálové fázy** (16 variantov): zákazník vidí detailný stav
+- **TechPhase** (38 fáz): technik vidí presný aktuálny krok
+
+Všetky finančné výpočty idú výlučne cez **`pricing-engine.ts`** — jediný zdroj pravdy pre ceny.
+
+---
+
+## Poistní partneri
+
+| Partner | Skratka | Krajina |
+|---|---|---|
+| AXA | AXA | SK + CZ |
+| Europ Assistance | EA | SK + CZ |
+| Security Support / Allianz | SEC | CZ |
+
+---
+
+## Konvencie
+
+- Stavové kľúče sú **slovenské** (`prijem`, `naplanovane`, `na_mieste`...)
+- TechPhase kľúče sú **anglické** (`en_route`, `arrived`, `diagnostics`...)
+- UI text je slovenský/český **s diakritikou** — nikdy nestrippovať
+- Mena: **CZK (Kč)** — firma operuje v ČR

@@ -1,0 +1,133 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Dokumentácia/Rozhrania" />
+
+# Štyri rozhrania
+
+Všetky štyri rozhrania sú v jednom Next.js 14 projekte, zdieľajú jednu DB a jeden stavový stroj.
+
+---
+
+## 1. Dispatch App — Technik (`/dispatch/*`)
+
+**Určenie:** Mobilná PWA pre technikov v teréne. Uber-like UX — zákazky sa objavujú na „burze", technik ich prijíma alebo odmieta.
+
+**Auth:** JWT cookie `dispatch-auth` (telefón + SMS kód). Dev bypass: `DEV_AUTH_CODE=847291`.
+
+**Layout:** `src/app/dispatch/layout.tsx` — auth check, role redirect (operátori → `/admin`), `BottomTabBar` navigácia.
+
+### Stránky
+
+| Route | Účel |
+|---|---|
+| `/dispatch` | Domov — dnešné zákazky, aktívna zákazka, rýchle štatistiky |
+| `/dispatch/marketplace` | Burza — dostupné zákazky na prijatie/odmietnutie |
+| `/dispatch/deals` | Alias pre marketplace (legacy) |
+| `/dispatch/my-jobs` | Priradené a historické zákazky |
+| `/dispatch/job` | Detail aktívnej zákazky + smart button |
+| `/dispatch/calendar` | Deň/týždeň pohľad, časové bloky |
+| `/dispatch/calls` | História hovorov (CloudTalk) |
+| `/dispatch/chat` | Správy viazané na zákazku |
+| `/dispatch/protocol` | Sprievodca odovzdaním protokolu |
+| `/dispatch/faq` | Pomoc / FAQ |
+| `/dispatch/notifications` | Centrum push notifikácií |
+| `/dispatch/profile` | Masterprofil: štatistiky, dostupnosť, vozidlo, dokumenty |
+| `/dispatch/settings` | Preferencie, jazyk, téma |
+
+### Smart Button systém
+
+Jeden „veľký" tlačidlo na stránke `/dispatch/job` sa dynamicky mení podľa kombinácie `crmStep` + `techPhase`. Logika v `src/lib/smartButton.ts`.
+
+---
+
+## 2. Admin CRM — Operátor (`/admin/*`)
+
+**Určenie:** Plný CRM dispečing pre operátorov. Správa celého životného cyklu zákazky.
+
+**Auth:** Rovnaký JWT systém, role `operator`. Dev route: `/api/auth/dev-admin`.
+
+**Layout:** `src/app/admin/layout.tsx` — sidebar navigácia, AI brain signály, notifikácie.
+
+### Stránky
+
+| Route | Účel |
+|---|---|
+| `/admin` | Dashboard — KPI, pipeline, rýchle akcie, AI signály |
+| `/admin/jobs` | Zoznam zákaziek s filtrami a pipeline |
+| `/admin/jobs/[id]` | Detail zákazky — kontext, aktivita, AI polia |
+| `/admin/jobs/new` | Manuálne vytvorenie zákazky (+ import z emailu) |
+| `/admin/technicians` | Adresár technikov s GPS a špecializáciami |
+| `/admin/technicians/[id]` | Detail technika — profil, história, hodnotenia |
+| `/admin/partners` | Správa poistných partnerov |
+| `/admin/dispatch` | Plánovanie dispečingu — denný pohľad |
+| `/admin/chat` | Operátorský chat (zákazky + priamy chat s technikom) |
+| `/admin/payments` | Platobné batche, SEPA export |
+| `/admin/reminders` | Manuálne pripomienky operátorov |
+| `/admin/ai-fields` | Konfigurácia AI vlastných polí |
+| `/admin/settings` | Systémové nastavenia |
+
+### Email import zákazky
+
+Stránka `/admin/jobs/new` obsahuje panel „Importovať z objednávky". Operátor vloží text emailu od poisťovne → AI extrahuje polia → vyplní formulár automaticky.
+
+---
+
+## 3. Klientský portál (`/client/[token]`)
+
+**Určenie:** Token-based pohľad zákazníka — **bez prihlásenia**. UUID token v URL.
+
+**Auth:** Žiadna. Token sa overuje oproti DB (`jobs.portal_token`).
+
+### 16 fázových variantov
+
+Portál zobrazuje jeden z 16 detailných stavov zákazky vizuálne — od diagnostiky po uzavretie. Zákazník môže:
+- Sledovať aktuálny stav v reálnom čase (polling)
+- Schváliť alebo odmietnuť doplatok (`/portal/[token]/action`)
+- Posielať správy (`/portal/[token]/chat`)
+- Stiahnuť protokol PDF, cenovú ponuku, alebo všetko naraz (ZIP)
+
+### Fázy
+
+```
+diagnostic → technician → technician_on_way → schedule_confirmation
+  → in_progress → onsite_diagnosis → work_in_progress → work_paused
+  → awaiting_next_visit → surcharge → awaiting_surcharge_approval
+  → protocol → awaiting_protocol_signature → settlement_review
+  → rating → closed
+```
+
+---
+
+## 4. Servisný protokol (`/protocol/[token]`)
+
+**Určenie:** Token-based sprievodca odovzdaním zákazky pre technika v teréne — **bez prihlásenia**.
+
+**Auth:** Žiadna. Token sa overuje oproti DB.
+
+### 6 typov protokolov
+
+| Typ | Kľúč | Kedy |
+|---|---|---|
+| Štandardná práca | `standard_work` | Bežná oprava dokončená |
+| S doplatkom | `surcharge` | Klient platí nad rámec pokrytia |
+| Len diagnostika | `diagnostic_only` | Diagnóza bez opravy |
+| Doplatok vopred dohodnutý | `completed_surcharge` | Doplatok bol vopred schválený |
+| Multi-visit | `multi_visit` | Až 5 návštev, čiastočná práca |
+| Špeciálna diagnostika | `special_diagnostic` | Expertná diagnostika |
+
+### Kroky sprievodcu
+
+1. Výber typu protokolu
+2. Zhrnutie práce + hodiny + materiál
+3. Fotografie (pred / po / porucha)
+4. Podpis zákazníka
+5. Odoslanie a PDF generácia
+
+---
+
+## Spoločné princípy
+
+- Všetky štyri rozhrania sú **responsive mobile-first** (max-width: 500px)
+- Rovnaké CSS custom properties a témy (dark/light)
+- Internacionalizácia: `src/i18n/sk.json` + `src/i18n/cz.json`
+- Offline podpora v dispatch app: `src/lib/offlineQueue.ts` + `src/lib/syncManager.ts`

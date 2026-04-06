@@ -1,0 +1,151 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Dokumentácia/Status Engine" />
+
+# Status Engine
+
+Súbor: `src/lib/statusEngine.ts`
+
+Každá zmena stavu v celom systéme prechádza cez tento centrálny stavový stroj. Mapuje štyri paralelné stavové systémy a validuje prechody podľa roly.
+
+---
+
+## CRM Pipeline — 13 krokov (0–12)
+
+| Idx | DB kľúč | SK label | Popis |
+|---|---|---|---|
+| 0 | `prijem` | Príjem | Zákazka vytvorená, čaká na dispečing |
+| 1 | `dispatching` | Dispečing | Hľadá sa technik |
+| 2 | `naplanovane` | Naplánované | Technik priradený, dátum dohodnutý |
+| 3 | `na_mieste` | Na mieste | Technik na adrese, diagnostika |
+| 4 | `schvalovanie_ceny` | Schvaľovanie ceny | Odhad čaká na schválenie CRM |
+| 5 | `cenova_ponuka_klientovi` | Cenová ponuka klientovi | Doplatok čaká na schválenie klienta |
+| 6 | `dokoncene` | Dokončené | Oprava hotová, protokol odoslaný |
+| 7 | `zuctovanie` | Zúčtovanie | Technik odovzdáva vyúčtovanie |
+| 8 | `cenova_kontrola` | Cenová kontrola | CRM kontroluje ceny |
+| 9 | `ea_odhlaska` | EA odhláška | Odhlásenie u Europ Assistance |
+| 10 | `fakturacia` | Fakturácia | Faktúra sa generuje / nahrala |
+| 11 | `uhradene` | Uhradené | Platba prijatá |
+| 12 | `uzavrete` | Uzavreté | Zákazka archivovaná |
+
+### Off-pipeline stavy
+
+| Kľúč | Popis |
+|---|---|
+| `cancelled` | Zákazka zrušená |
+| `on_hold` | Pozastavená (čaká na materiál, rozhodnutie...) |
+| `reklamacia` | Reklamácia / spor |
+| `archived` | Archivovaná bez uzavretia |
+
+---
+
+## Stavový tok — pipeline
+
+```
+prijem(0)
+  └─► dispatching(1)
+        └─► naplanovane(2)
+              └─► na_mieste(3)
+                    └─► schvalovanie_ceny(4)
+                          └─► cenova_ponuka_klientovi(5)   ← ak je doplatok
+                    └─► dokoncene(6)  ← priamo ak nie je doplatok
+              └─► dokoncene(6)
+                    └─► zuctovanie(7)
+                          └─► cenova_kontrola(8)
+                                └─► ea_odhlaska(9)   ← len pre EA partnera
+                          └─► fakturacia(10)
+                                └─► uhradene(11)
+                                      └─► uzavrete(12)
+
+Kedykoľvek: → cancelled | on_hold | reklamacia
+```
+
+---
+
+## TechPhase — 38 fáz
+
+Technik prechádza vlastnou sekvenciou fáz nezávisle od CRM krokov:
+
+```
+offer_sent → offer_accepted
+  → en_route → arrived
+  → diagnostics → estimate_draft → estimate_submitted
+  → estimate_approved | estimate_rejected
+  → client_approval_pending → client_approved | client_declined
+  → working → break → caka_material → awaiting_next_visit
+  → photos_done → price_confirmed → work_completed
+  → settlement_review → settlement_correction → settlement_approved
+  → price_review → surcharge_sent → surcharge_approved → price_approved
+  → final_protocol_draft → final_protocol_sent → final_protocol_signed
+  → invoice_ready → departed
+```
+
+Špeciálna vetva (len diagnostika):
+```
+diagnostics → diagnostic_completed
+```
+
+---
+
+## Portálové fázy — 16 variantov
+
+Zákazník vidí jeden z týchto stavov na portáli:
+
+| Fáza | SK popis |
+|---|---|
+| `diagnostic` | Diagnostika prebieha |
+| `technician` | Technik priradený |
+| `technician_on_way` | Technik je na ceste |
+| `schedule_confirmation` | Potvrdzovanie termínu |
+| `in_progress` | Práca prebieha |
+| `onsite_diagnosis` | Diagnostika na mieste |
+| `surcharge` | Čaká na váš súhlas s doplatkom |
+| `awaiting_surcharge_approval` | Schvaľovanie doplatku |
+| `work_in_progress` | Práca prebieha |
+| `work_paused` | Práca pozastavená |
+| `awaiting_next_visit` | Čaká sa na ďalšiu návštevu |
+| `protocol` | Protokol odoslaný |
+| `awaiting_protocol_signature` | Čaká sa na podpis |
+| `settlement_review` | Kontrola zúčtovania |
+| `rating` | Ohodnoťte službu |
+| `closed` | Zákazka uzavretá |
+
+---
+
+## Kľúčové funkcie
+
+### `advanceCrmStep(currentStep, targetStep, role, techPhase?)`
+Validuje a vykoná prechod. Vracia error ak rola nemá oprávnenie alebo prechod nie je povolený v `ALLOWED_TRANSITIONS`.
+
+### `techActionToCrmStep(action, currentStep)`
+Mapuje akciu technika (napr. `'arrived'`, `'submit_estimate'`) na cieľový CRM krok.
+
+### `clientActionToCrmStep(action, currentStep)`
+Mapuje akciu klienta (napr. `'approve_surcharge'`, `'decline_surcharge'`) na cieľový CRM krok.
+
+### `resolveFullState(crmStep, techPhase?, customFields?)`
+Len na čítanie — rozbalí všetky štyri stavové systémy pre daný stav. Používa sa v GET requestoch.
+
+### `canTransition(from, to, role)`
+Rýchla kontrola či rola môže urobiť daný prechod.
+
+### `canSetTechPhase(step, phase)`
+Overí či je techPhase platná pre aktuálny CRM krok.
+
+### `getNextStepsForJob(currentStep, role, partnerCode)`
+Vráti zoznam dostupných ďalších krokov. Preskočí `ea_odhlaska` pre non-EA partnerov.
+
+### `crmStepToPortalPhase(step, techPhase?, customFields?)`
+Rozlíši detailnú portálovú fázu (napr. `technician_on_way` vs `technician`) podľa kombinácie CRM kroku a TechPhase.
+
+### `crmStepToProgressPercent(step)`
+Vráti percento progres baru (0–100) pre daný CRM krok.
+
+---
+
+## Kde sa engine používa
+
+- **Každý API route** čo mení stav: `POST /api/jobs/[id]/status`, `/api/dispatch/status`, `/api/marketplace/[id]/take`
+- **Admin CRM**: zmena stavu zákazky v job detail stránke
+- **Dispatch App**: smart button systém (`src/lib/smartButton.ts`)
+- **Klientský portál**: zobrazenie fázy a umožnenie akcií klienta

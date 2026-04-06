@@ -1,0 +1,243 @@
+'use client'
+
+import React, { useState, useEffect, useRef } from 'react'
+import type { SlaRuleLog } from '@/types/sla'
+
+interface Props {
+  onClose: () => void
+}
+
+const LIMIT = 50
+
+const inputStyle: React.CSSProperties = {
+  padding: '7px 10px',
+  fontSize: '13px',
+  border: '1px solid #D1D5DB',
+  borderRadius: '6px',
+  fontFamily: "'Montserrat', sans-serif",
+  background: '#fff',
+  color: '#111827',
+}
+
+export default function SlaLogPanel({ onClose }: Props) {
+  const [entries, setEntries] = useState<SlaRuleLog[]>([])
+  const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState<string | null>(null)
+  const [filterRuleId, setFilterRuleId] = useState('')
+  const [filterJobId, setFilterJobId] = useState('')
+  const currentOffset = useRef(0)
+  const [hasMore, setHasMore] = useState(false)
+
+  const fetchLog = async (reset: boolean, ruleId: string, jobId: string) => {
+    setLoading(true)
+    if (reset) setFetchError(null)
+    const off = reset ? 0 : currentOffset.current
+    try {
+      const params = new URLSearchParams({ limit: String(LIMIT), offset: String(off) })
+      if (ruleId) params.set('ruleId', ruleId)
+      if (jobId) params.set('jobId', jobId)
+      const res = await fetch(`/api/admin/sla-rules/log?${params}`)
+      if (res.ok) {
+        const data = await res.json()
+        const newEntries: SlaRuleLog[] = data.entries || []
+        if (reset) {
+          setEntries(newEntries)
+          currentOffset.current = newEntries.length
+        } else {
+          setEntries(prev => [...prev, ...newEntries])
+          currentOffset.current += newEntries.length
+        }
+        setHasMore(newEntries.length === LIMIT)
+        setFetchError(null)
+      } else {
+        setFetchError('Nepodarilo sa načítať log SLA pravidiel.')
+      }
+    } catch {
+      setFetchError('Chyba siete pri načítaní logu.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    currentOffset.current = 0
+    fetchLog(true, filterRuleId, filterJobId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterRuleId, filterJobId])
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
+      zIndex: 1000, display: 'flex', alignItems: 'center',
+      justifyContent: 'center', padding: '20px',
+    }}>
+      <div style={{
+        background: '#fff', borderRadius: '12px', width: '100%',
+        maxWidth: '900px', maxHeight: '85vh', display: 'flex',
+        flexDirection: 'column', boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+      }}>
+        {/* Header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '16px 20px', borderBottom: '1px solid #E5E7EB',
+        }}>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: '16px', color: '#111827' }}>Log SLA pravidiel</div>
+            <div style={{ fontSize: '12px', color: '#4B5563', marginTop: '2px' }}>Posledných {LIMIT} spustení</div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: '#6B7280', lineHeight: 1 }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Filters */}
+        <div style={{ display: 'flex', gap: '10px', padding: '12px 20px', borderBottom: '1px solid #F3F4F6', flexWrap: 'wrap' }}>
+          <input
+            style={{ ...inputStyle, width: '140px' }}
+            type="number"
+            placeholder="ID pravidla"
+            value={filterRuleId}
+            onChange={e => setFilterRuleId(e.target.value)}
+          />
+          <input
+            style={{ ...inputStyle, width: '140px' }}
+            type="number"
+            placeholder="ID zákazky"
+            value={filterJobId}
+            onChange={e => setFilterJobId(e.target.value)}
+          />
+          {(filterRuleId || filterJobId) && (
+            <button
+              onClick={() => { setFilterRuleId(''); setFilterJobId('') }}
+              style={{ ...inputStyle, cursor: 'pointer', background: '#F3F4F6', border: 'none', fontSize: '12px', color: '#374151' }}
+            >
+              Zrušiť filtre
+            </button>
+          )}
+        </div>
+
+        {/* Table */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px' }}>
+          {fetchError && (
+            <div style={{
+              margin: '12px 0', padding: '10px 14px', background: '#FFEBEE',
+              borderLeft: '4px solid #F44336', borderRadius: '6px',
+              fontSize: '13px', color: '#B71C1C', fontWeight: 500,
+            }}>
+              ⚠️ {fetchError}
+            </div>
+          )}
+          {loading && entries.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#4B5563', fontSize: '14px' }}>
+              Načítavam...
+            </div>
+          ) : entries.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#4B5563', fontSize: '14px' }}>
+              Žiadne záznamy.
+            </div>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+              <thead>
+                <tr>
+                  {['Čas', 'Pravidlo', 'Zákazka', 'Akcia', 'Výsledok'].map(h => (
+                    <th key={h} style={{
+                      textAlign: 'left', padding: '10px 8px', fontWeight: 700,
+                      fontSize: '11px', color: '#6B7280', textTransform: 'uppercase',
+                      letterSpacing: '0.5px', borderBottom: '2px solid #E5E7EB',
+                      position: 'sticky', top: 0, background: '#fff',
+                    }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {entries.map(entry => (
+                  <tr
+                    key={entry.id}
+                    style={{ background: entry.success ? 'transparent' : 'rgba(239,68,68,0.04)' }}
+                  >
+                    <td style={{ padding: '8px', borderBottom: '1px solid #F3F4F6', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontWeight: 500, color: '#374151' }}>
+                        {new Date(entry.fired_at).toLocaleDateString('sk-SK')}
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#6B7280' }}>
+                        {new Date(entry.fired_at).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                      </div>
+                    </td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid #F3F4F6' }}>
+                      <div style={{ fontWeight: 600, color: '#111827' }}>
+                        {entry.rule_name || `Pravidlo #${entry.rule_id}`}
+                      </div>
+                      {entry.rule_id && (
+                        <div style={{ fontSize: '11px', color: '#6B7280' }}>#{entry.rule_id}</div>
+                      )}
+                    </td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid #F3F4F6' }}>
+                      {entry.job_id ? (
+                        <span style={{ color: '#2563EB', fontWeight: 500 }}>#{entry.job_id}</span>
+                      ) : (
+                        <span style={{ color: '#9CA3AF' }}>—</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid #F3F4F6' }}>
+                      <span style={{
+                        display: 'inline-block', padding: '2px 8px', borderRadius: '10px',
+                        fontSize: '11px', fontWeight: 600,
+                        background: 'rgba(191,149,63,0.12)', color: '#92400E',
+                      }}>
+                        {entry.action_type ?? '—'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid #F3F4F6' }}>
+                      {entry.success ? (
+                        <span style={{ color: '#15803d', fontWeight: 700, fontSize: '12px' }}>✓ OK</span>
+                      ) : (
+                        <span
+                          title={entry.error || undefined}
+                          style={{
+                            color: '#DC2626', fontWeight: 600, fontSize: '12px',
+                            cursor: entry.error ? 'help' : 'default',
+                            display: 'inline-block', maxWidth: '200px',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}
+                        >
+                          ✗ {entry.error || 'Chyba'}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          {/* Load more */}
+          {hasMore && !loading && (
+            <div style={{ textAlign: 'center', padding: '16px' }}>
+              <button
+                onClick={() => fetchLog(false, filterRuleId, filterJobId)}
+                style={{
+                  background: '#F3F4F6', color: '#374151', border: 'none',
+                  borderRadius: '6px', padding: '8px 20px', fontSize: '13px',
+                  fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                Načítať ďalšie
+              </button>
+            </div>
+          )}
+
+          {loading && entries.length > 0 && (
+            <div style={{ textAlign: 'center', padding: '12px', color: '#4B5563', fontSize: '13px' }}>
+              Načítavam...
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
