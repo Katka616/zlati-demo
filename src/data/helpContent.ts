@@ -735,11 +735,17 @@ export const WALKTHROUGH_STEPS: Record<string, { sk: WalkthroughStep[]; cz: Walk
   '/dispatch/demo': {
     sk: [
       { target: 'demo-job-list', title: 'Vaše zákazky', description: 'Každá karta predstavuje zákazku v inom stave — od naplánovanej po dokončenú. Kliknite na ľubovoľnú a pozrite si, ako vyzerá práca v aplikácii.', position: 'bottom' },
-      { target: 'bottom-nav', title: 'Navigácia v aplikácii', description: 'Domov = prehľad zákaziek, Ponuky = nové zákazky na prihlásenie, Zákazky = kompletný zoznam, Kalendár = plánovanie, Správy = chat s dispečerom.', position: 'top' },
+      { target: 'bottom-nav', title: 'Navigácia v aplikácii', description: 'Domov = prehľad, Ponuky = nové zákazky, Zákazky = kompletný zoznam, Kalendár = plánovanie, Správy = chat.', position: 'top' },
+      { target: 'job-customer-card', title: 'Karta zákazníka', description: 'Meno, adresa a kontakt. Odtiaľto sa priamo navigujete, zavoláte alebo otvoríte chat.', position: 'bottom' },
+      { target: 'job-status-chip', title: 'Stav zákazky', description: 'Aktuálna fáza: Naplánované → Na ceste → Na mieste → Diagnostika → Odhad → Práca → Protokol → Fakturácia.', position: 'bottom' },
+      { target: 'job-action-button', title: 'Hlavné tlačidlo', description: 'Zlaté tlačidlo posúva zákazku ďalej. Vždy ukazuje ďalší krok — stačí kliknúť a pokračovať.', position: 'top' },
     ],
     cz: [
       { target: 'demo-job-list', title: 'Vaše zakázky', description: 'Každá karta představuje zakázku v jiném stavu — od naplánované po dokončenou. Klikněte na libovolnou a podívejte se, jak vypadá práce v aplikaci.', position: 'bottom' },
-      { target: 'bottom-nav', title: 'Navigace v aplikaci', description: 'Domů = přehled zakázek, Nabídky = nové zakázky k přihlášení, Zakázky = kompletní seznam, Kalendář = plánování, Zprávy = chat s dispečerem.', position: 'top' },
+      { target: 'bottom-nav', title: 'Navigace v aplikaci', description: 'Domů = přehled, Nabídky = nové zakázky, Zakázky = kompletní seznam, Kalendář = plánování, Zprávy = chat.', position: 'top' },
+      { target: 'job-customer-card', title: 'Karta zákazníka', description: 'Jméno, adresa a kontakt zákazníka. Odtud se přímo navigujete, zavoláte nebo otevřete chat.', position: 'bottom' },
+      { target: 'job-status-chip', title: 'Stav zakázky', description: 'Aktuální fáze práce: Naplánované → Na cestě → Na místě → Diagnostika → Odhad → Práce → Protokol → Fakturace.', position: 'bottom' },
+      { target: 'job-action-button', title: 'Hlavní tlačítko', description: 'Zlaté tlačítko posunuje zakázku dál. Vždy ukazuje další krok — stačí kliknout a pokračovat.', position: 'top' },
     ],
   },
 

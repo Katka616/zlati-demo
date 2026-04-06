@@ -242,15 +242,12 @@ function DemoDashboard({ jobs, onSelectJob, onAcceptJob }: {
                 <div style={{ fontSize: 12, color: 'var(--text-secondary, #777)', marginBottom: 12 }}>
                   {job.distance} km · {job.scheduledTime}
                 </div>
-                <div style={{ fontSize: 11, color: 'rgba(212,168,67,0.8)', marginBottom: 12, lineHeight: 1.6 }}>
-                  <div style={{ marginBottom: 6 }}>
-                    Nová zakázka z pojišťovny. Po přijetí se vám zobrazí v seznamu aktivních zakázek.
+                <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
+                  <div style={{ fontSize: 10, color: 'rgba(34,197,94,0.7)', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: 0.5, marginBottom: 4 }}>
+                    Termín od klienta
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: 'rgba(212,168,67,0.1)', borderRadius: 8, padding: '8px 10px', border: '1px solid rgba(212,168,67,0.2)' }}>
-                    <span style={{ fontSize: 14, flexShrink: 0 }}>&#9888;&#65039;</span>
-                    <span style={{ fontSize: 11, color: '#D4A843', fontWeight: 600, lineHeight: 1.4 }}>
-                      Po přijetí musíte potvrdit termín klientovi — zavolat nebo domluvit přesný čas návštěvy.
-                    </span>
+                  <div style={{ fontSize: 13, color: '#22c55e', fontWeight: 700 }}>
+                    {job.scheduledTime}
                   </div>
                 </div>
                 <button
@@ -673,6 +670,16 @@ export default function DemoPage() {
     }
   }, [])
 
+  // Trigger walkthrough when entering job detail
+  useEffect(() => {
+    if (state.screen === 'job-detail') {
+      const timer = setTimeout(() => {
+        window.dispatchEvent(new Event('trigger-walkthrough'))
+      }, 800)
+      return () => clearTimeout(timer)
+    }
+  }, [state.screen])
+
   const activeJob = state.activeJobId ? state.jobs[state.activeJobId] : null
 
   // Check if all jobs are done (demo complete)
@@ -855,9 +862,6 @@ export default function DemoPage() {
       </MobileFrame>
     )
   }
-
-  // NOTE: Walkthrough is rendered outside MobileFrame intentionally —
-  // fixed overlays get clipped inside max-width containers
 
   // Dashboard
   return (
