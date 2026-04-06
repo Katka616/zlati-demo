@@ -120,6 +120,25 @@ function DemoWelcome({ onStart }: { onStart: () => void }) {
   )
 }
 
+// ── Status badge helper ─────────────────────────────────────────────
+
+function getJobStatusLabel(job: DispatchJob): { label: string; color: string } {
+  const step = job.crmStep ?? 0
+  const phase = job.techPhase || ''
+  if (step <= 1) return { label: 'Nová nabídka', color: '#D4A843' }
+  if (step === 2 && phase === 'offer_accepted') return { label: 'Naplánováno', color: '#22c55e' }
+  if (step === 2 && phase === 'en_route') return { label: 'Na cestě', color: '#3b82f6' }
+  if (step === 3) return { label: 'Na místě — diagnostika', color: '#f59e0b' }
+  if (step === 4) return { label: 'Odhad schválen', color: '#22c55e' }
+  if (step === 5) return { label: 'Čeká na klienta', color: '#f59e0b' }
+  if (step === 6) return { label: 'Probíhá oprava', color: '#3b82f6' }
+  if (step >= 7 && step <= 8) return { label: 'Protokol', color: '#8b5cf6' }
+  if (step === 9 && phase === 'invoice_ready') return { label: 'Fakturace', color: '#D4A843' }
+  if (step === 9) return { label: 'Vyúčtování', color: '#D4A843' }
+  if (step >= 10) return { label: 'Dokončeno', color: '#22c55e' }
+  return { label: 'V řešení', color: '#9ca3af' }
+}
+
 // ── Dashboard ───────────────────────────────────────────────────────
 
 function DemoDashboard({ jobs, onSelectJob, onAcceptJob }: {
@@ -299,9 +318,24 @@ function DemoDashboard({ jobs, onSelectJob, onAcceptJob }: {
                   <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary, #f5f5f5)' }}>{job.customerName}</span>
                   <span style={{ fontSize: 11, color: 'var(--text-secondary, #9ca3af)', fontWeight: 600 }}>{job.referenceNumber}</span>
                 </div>
+                {/* Status badge */}
+                {(() => {
+                  const { label, color } = getJobStatusLabel(job)
+                  return (
+                    <div style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                      fontSize: 11, fontWeight: 700, color,
+                      background: `${color}15`, padding: '3px 10px', borderRadius: 6,
+                      marginBottom: 6,
+                    }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: color }} />
+                      {label}
+                    </div>
+                  )
+                })()}
                 <div style={{ fontSize: 13, color: 'var(--text-secondary, #9ca3af)', marginBottom: 4 }}>{job.customerAddress}, {job.customerCity}</div>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary, #777)' }}>{job.subject}</div>
-                <div style={{ marginTop: 10, fontSize: 12, fontWeight: 600, color: '#D4A843', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ marginTop: 8, fontSize: 12, fontWeight: 600, color: '#D4A843', display: 'flex', alignItems: 'center', gap: 4 }}>
                   {job.scheduledDate && (
                     <span>
                       {new Date(job.scheduledDate).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long' })}
