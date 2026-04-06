@@ -664,17 +664,43 @@ export default function DemoPage() {
         if (url.includes('/api/dispatch/status')) {
           return mockJson({ success: true, job: null })
         }
-        // Photos — return empty
+        // Photos — return demo photos with placeholder images
         if (url.includes('/api/dispatch/photos')) {
-          return mockJson({ photos: [] })
+          // Generate a simple SVG placeholder as base64
+          const svgPhoto = (label: string, color: string) => {
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="${color}" width="400" height="300"/><rect fill="rgba(0,0,0,0.3)" x="0" y="220" width="400" height="80"/><text x="200" y="150" text-anchor="middle" font-family="sans-serif" font-size="40" fill="rgba(255,255,255,0.3)">📷</text><text x="200" y="260" text-anchor="middle" font-family="sans-serif" font-size="16" fill="rgba(255,255,255,0.8)">${label}</text></svg>`
+            return `data:image/svg+xml;base64,${btoa(svg)}`
+          }
+          return mockJson([
+            { id: 1, filename: 'foto-pred-opravou.jpg', data: svgPhoto('Foto před opravou', '#2a3a4a'), source: 'technician', mime_type: 'image/jpeg', created_at: new Date().toISOString() },
+            { id: 2, filename: 'foto-poskozeni.jpg', data: svgPhoto('Detail poškození', '#3a2a2a'), source: 'technician', mime_type: 'image/jpeg', created_at: new Date().toISOString() },
+            { id: 3, filename: 'foto-po-oprave.jpg', data: svgPhoto('Foto po opravě', '#2a3a2a'), source: 'technician', mime_type: 'image/jpeg', created_at: new Date().toISOString() },
+          ])
+        }
+        // Job documents — return mock protocols, invoices
+        if (url.includes('/documents')) {
+          return mockJson([
+            { type: 'protocol', id: 'proto-1', label: 'Servisní protokol', protocolType: 'final', visitNumber: 1, hasPdf: true, createdAt: new Date().toISOString() },
+            { type: 'invoice', id: 'inv-1', label: 'Faktura ZR-2026-001', invoiceMethod: 'generated', invoiceNumber: 'ZR-2026-001', grandTotal: 2750, currency: 'CZK', createdAt: new Date().toISOString() },
+          ])
         }
         // Jobs detail — return active job data
         if (url.match(/\/api\/dispatch\/jobs\//)) {
           return mockJson({ success: true })
         }
-        // Settlement
+        // Settlement — return mock data
         if (url.includes('/api/dispatch/settlement')) {
-          return mockJson({ settlement: null })
+          return mockJson({
+            settlement: {
+              hours: 1.5,
+              km: 12,
+              materials: [{ name: 'Kartuše baterie 35mm', qty: 1, price: 350 }],
+              work_price: 1350,
+              material_price: 350,
+              travel_price: 830,
+              total: 2530,
+            },
+          })
         }
         // Chat
         if (url.includes('/api/dispatch/chat')) {

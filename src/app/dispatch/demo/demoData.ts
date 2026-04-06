@@ -293,7 +293,23 @@ export const DEMO_JOBS: DispatchJob[] = [
     subject: 'Sprchová baterie teče i v zavřeném stavu. Potřeba výměny celé baterie.',
     distance: 3,
     durationMinutes: 8,
-    customFields: {},
+    finalPhotosUploaded: true,
+    photos: [
+      { id: 'p1', url: '', type: 'before', caption: 'Poškozená baterie', uploadedAt: new Date().toISOString() },
+      { id: 'p2', url: '', type: 'damage', caption: 'Detail koroze', uploadedAt: new Date().toISOString() },
+    ],
+    customFields: {
+      client_diagnostic: {
+        description: 'Sprchová baterie teče i v zavřeném stavu. Problém asi měsíc. Kape na podlahu.',
+        photos_count: 2,
+      },
+    },
+    estimateData: {
+      hours: 1,
+      materials: [{ name: 'Sprchová baterie Grohe', quantity: 1, unitPrice: 2200, vatRate: 21 }],
+      travelKm: 3,
+      needsNextVisit: false,
+    } as any,
   },
 
   // ── 6. Fakturace — vygenerovat fakturu ──
@@ -318,6 +334,15 @@ export const DEMO_JOBS: DispatchJob[] = [
     subject: 'Radiátor v ložnici netopí. Oprava dokončena — čeká na vystavení faktury.',
     distance: 7,
     durationMinutes: 16,
+    finalPhotosUploaded: true,
+    photos: [
+      { id: 'inv-p1', url: '', type: 'before', caption: 'Radiátor před opravou', uploadedAt: new Date(Date.now() - 43200000).toISOString() },
+      { id: 'inv-p2', url: '', type: 'after', caption: 'Nová termostatická hlavice', uploadedAt: new Date(Date.now() - 36000000).toISOString() },
+    ],
+    approvedWorkPrice: 1350,
+    approvedMaterialPrice: 450,
+    approvedTravelPrice: 830,
+    approvedTotal: 2630,
     customFields: {
       confirmed_settlement: {
         hours: 1.5,
@@ -328,6 +353,15 @@ export const DEMO_JOBS: DispatchJob[] = [
         travel_price: 830,
         total: 2630,
       },
+      protocol_history: [
+        {
+          visitNumber: 1,
+          type: 'final',
+          submittedAt: new Date(Date.now() - 36000000).toISOString(),
+          workDescription: 'Výměna termostatické hlavice na radiátoru v ložnici. Odvzdušnění celého okruhu.',
+          materials: [{ name: 'Termostatická hlavice Danfoss', quantity: 1, unitPrice: 450 }],
+        },
+      ],
     },
   },
 
@@ -353,6 +387,26 @@ export const DEMO_JOBS: DispatchJob[] = [
     subject: 'Prasklé potrubí pod dřezem. Oprava dokončena, faktura uhrazena.',
     distance: 10,
     durationMinutes: 22,
-    customFields: {},
+    finalPhotosUploaded: true,
+    photos: [
+      { id: 'done-p1', url: '', type: 'before', caption: 'Prasklé potrubí', uploadedAt: new Date(Date.now() - 86400000).toISOString() },
+      { id: 'done-p2', url: '', type: 'after', caption: 'Opravené potrubí', uploadedAt: new Date(Date.now() - 82800000).toISOString() },
+    ],
+    approvedWorkPrice: 1800,
+    approvedMaterialPrice: 320,
+    approvedTravelPrice: 830,
+    approvedTotal: 2950,
+    paymentStatus: 'paid',
+    customFields: {
+      protocol_history: [
+        {
+          visitNumber: 1,
+          type: 'final',
+          submittedAt: new Date(Date.now() - 82800000).toISOString(),
+          workDescription: 'Výměna prasklého úseku potrubí pod dřezem. Připojení nových fitinek, zkouška těsnosti.',
+          materials: [{ name: 'Cu potrubí 15mm 2m', quantity: 1, unitPrice: 180 }, { name: 'Fitinky sada', quantity: 1, unitPrice: 140 }],
+        },
+      ],
+    },
   },
 ]
