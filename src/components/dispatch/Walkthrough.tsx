@@ -84,17 +84,8 @@ export default function Walkthrough({ technicianId, lang = 'sk' }: Props) {
 
     const target = document.querySelector<HTMLElement>(`[data-help-target="${step.target}"]`)
     if (!target) {
-      // No target found — center tooltip on screen
-      setSpotlightRect(null)
-      setTooltipStyle({
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 'calc(100% - 48px)',
-        maxWidth: 360,
-        zIndex: 9999,
-      })
+      // No target found — skip to next step automatically
+      next()
       return
     }
 
