@@ -326,7 +326,7 @@ export const DEMO_JOBS: DispatchJob[] = [
     urgency: 'normal',
     createdAt: new Date(Date.now() - 43200000).toISOString(),
     status: 'zuctovanie',
-    techPhase: 'invoice_ready',
+    techPhase: 'settlement_review',
     crmStep: 9,
     scheduledDate: today(),
     scheduledTime: '07:00 - 09:00',
@@ -344,6 +344,16 @@ export const DEMO_JOBS: DispatchJob[] = [
     approvedTravelPrice: 830,
     approvedTotal: 2630,
     customFields: {
+      pending_settlement: {
+        hours: 1.5,
+        km: 14,
+        materials: [
+          { id: 'm1', name: 'Termostatická hlavice Danfoss', quantity: 1, pricePerUnit: 450, type: 'heating', unit: 'ks', payer: 'pojistovna' },
+        ],
+        visitDate: today(),
+        arrivalTime: '07:15',
+        departureTime: '08:45',
+      },
       confirmed_settlement: {
         hours: 1.5,
         km: 14,

@@ -134,6 +134,7 @@ function getJobStatusLabel(job: DispatchJob): { label: string; color: string } {
   if (step === 6) return { label: 'Probíhá oprava', color: '#3b82f6' }
   if (step >= 7 && step <= 8) return { label: 'Protokol', color: '#8b5cf6' }
   if (step === 9 && phase === 'invoice_ready') return { label: 'Fakturace', color: '#D4A843' }
+  if (step === 9 && phase === 'settlement_review') return { label: 'Vyúčtování', color: '#D4A843' }
   if (step === 9) return { label: 'Vyúčtování', color: '#D4A843' }
   if (step >= 10) return { label: 'Dokončeno', color: '#22c55e' }
   return { label: 'V řešení', color: '#9ca3af' }
@@ -727,10 +728,12 @@ export default function DemoPage() {
   }, [])
 
   // Override history.back — in demo, go back to dashboard instead of leaving
+  const dispatchRef = useRef(dispatch)
+  dispatchRef.current = dispatch
   useEffect(() => {
     const originalBack = window.history.back.bind(window.history)
     window.history.back = () => {
-      dispatch({ type: 'BACK_TO_DASHBOARD' })
+      dispatchRef.current({ type: 'BACK_TO_DASHBOARD' })
     }
     return () => { window.history.back = originalBack }
   }, [])
