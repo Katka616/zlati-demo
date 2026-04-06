@@ -242,8 +242,16 @@ function DemoDashboard({ jobs, onSelectJob, onAcceptJob }: {
                 <div style={{ fontSize: 12, color: 'var(--text-secondary, #777)', marginBottom: 12 }}>
                   {job.distance} km · {job.scheduledTime}
                 </div>
-                <div style={{ fontSize: 11, color: 'rgba(212,168,67,0.8)', fontStyle: 'italic', marginBottom: 12, lineHeight: 1.5 }}>
-                  Nová zakázka z pojišťovny. Po přijetí se vám zobrazí v seznamu aktivních zakázek a můžete vyrazit.
+                <div style={{ fontSize: 11, color: 'rgba(212,168,67,0.8)', marginBottom: 12, lineHeight: 1.6 }}>
+                  <div style={{ marginBottom: 6 }}>
+                    Nová zakázka z pojišťovny. Po přijetí se vám zobrazí v seznamu aktivních zakázek.
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, background: 'rgba(212,168,67,0.1)', borderRadius: 8, padding: '8px 10px', border: '1px solid rgba(212,168,67,0.2)' }}>
+                    <span style={{ fontSize: 14, flexShrink: 0 }}>&#9888;&#65039;</span>
+                    <span style={{ fontSize: 11, color: '#D4A843', fontWeight: 600, lineHeight: 1.4 }}>
+                      Po přijetí musíte potvrdit termín klientovi — zavolat nebo domluvit přesný čas návštěvy.
+                    </span>
+                  </div>
                 </div>
                 <button
                   onClick={() => onAcceptJob(job.id)}
@@ -847,6 +855,9 @@ export default function DemoPage() {
       </MobileFrame>
     )
   }
+
+  // NOTE: Walkthrough is rendered outside MobileFrame intentionally —
+  // fixed overlays get clipped inside max-width containers
 
   // Dashboard
   return (
