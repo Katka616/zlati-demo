@@ -746,21 +746,13 @@ export const WALKTHROUGH_STEPS: Record<string, { sk: WalkthroughStep[]; cz: Walk
   '/dispatch/demo/job': {
     sk: [
       { target: 'job-customer-card', title: 'Zákazník', description: 'Meno, adresa a kontakt. Navigácia, volanie a chat jedným kliknutím.', position: 'bottom' },
-      { target: 'job-status-chip', title: 'Priebeh zákazky', description: '1. Príjazd\n2. Diagnostika\n3. Odhad ceny\n4. Schválenie klientom\n5. Oprava\n6. Protokol + podpis\n7. Faktúra', position: 'bottom' },
-      { target: 'job-info-sections', title: 'Detaily a AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky. Informácie od klienta, dokumenty a fotky.', position: 'bottom' },
-      { target: 'job-action-button', title: 'Cenový odhad', description: 'Hodiny, km (GPS), materiál z katalógu. Ak klient dopláca — schvaľuje cez SMS na mobile.', position: 'top' },
-      { target: 'job-action-button', title: 'Protokol', description: 'Popis práce, materiál, fotky. Klient podpíše elektronicky na svojom mobile cez SMS odkaz.', position: 'top' },
-      { target: 'job-action-button', title: 'Vyúčtovanie', description: 'Skutočné hodiny, km, materiál. Systém prepočíta automaticky.', position: 'top' },
-      { target: 'job-action-button', title: 'Faktúra', description: 'Automatická faktúra + ISDOC pre účtovníčku. Vlastný variabilný symbol. Úhrada do 14 dní.', position: 'top' },
+      { target: 'job-info-sections', title: 'Detaily a AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky. Informácie od klienta, dokumenty a fotky.', position: 'top' },
+      { target: 'job-action-button', title: 'Ako to funguje', description: 'Zlaté tlačidlo posúva zákazku ďalej:\n\n1. Odhad ceny — hodiny, km, materiál\n2. Klient schvaľuje doplatok cez SMS\n3. Protokol — klient podpíše na mobile\n4. Vyúčtovanie — systém prepočíta\n5. Faktúra — automatická + ISDOC\n\nÚhrada do 14 dní.', position: 'top' },
     ],
     cz: [
       { target: 'job-customer-card', title: 'Zákazník', description: 'Jméno, adresa a kontakt. Navigace, volání a chat jedním kliknutím.', position: 'bottom' },
-      { target: 'job-status-chip', title: 'Průběh zakázky', description: '1. Příjezd\n2. Diagnostika\n3. Odhad ceny\n4. Schválení klientem (SMS)\n5. Oprava\n6. Protokol + podpis\n7. Faktura', position: 'top' },
       { target: 'job-info-sections', title: 'Detaily a AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky. Informace od klienta, dokumenty a fotky.', position: 'top' },
-      { target: 'job-action-button', title: 'Cenový odhad', description: 'Hodiny, km (GPS měření), materiál z katalogu.\n\nPokud klient musí doplatit — schvaluje přes SMS odkaz na svém mobilu.', position: 'top' },
-      { target: 'job-action-button', title: 'Protokol a podpis', description: 'Popis práce, materiál, fotky před a po.\n\nKlient podepíše elektronicky na svém mobilu přes SMS odkaz. Žádné papíry.', position: 'top' },
-      { target: 'job-action-button', title: 'Vyúčtování', description: 'Skutečné hodiny, km, materiál.\n\nPokud se něco změnilo oproti odhadu, jednoduše opravíte. Systém přepočítá automaticky.', position: 'top' },
-      { target: 'job-action-button', title: 'Fakturace', description: 'Automatická faktura z vašich sazeb. Zadáte vlastní variabilní symbol. K faktuře dostanete soubor pro účetní (ISDOC).\n\nNebo nahrajete vlastní PDF.\n\nÚhrada do 14 dnů.', position: 'top' },
+      { target: 'job-action-button', title: 'Jak to funguje', description: 'Zlaté tlačítko posunuje zakázku dál:\n\n1. Odhad ceny — hodiny, km, materiál\n2. Klient schvaluje doplatek přes SMS\n3. Protokol — klient podepíše na mobilu\n4. Vyúčtování — systém přepočítá\n5. Faktura — automatická + ISDOC pro účetní\n\nZadáte vlastní variabilní symbol.\nÚhrada do 14 dnů.', position: 'top' },
     ],
   },
 
