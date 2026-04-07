@@ -1083,7 +1083,7 @@ export default function InvoiceFormModal({
                     </tr>
                   </thead>
                   <tbody>
-                    {preview.items.map((item, idx) => (
+                    {(preview.items ?? []).map((item, idx) => (
                       <tr
                         key={idx}
                         style={idx % 2 === 0 ? styles.rowEven : styles.rowOdd}

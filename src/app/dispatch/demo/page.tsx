@@ -790,8 +790,16 @@ export default function DemoPage() {
       return true
     }
 
-    // Settlement — show demo modal
-    if (action === 'view_invoice' || action === 'approve_settlement') {
+    // Settlement — approve and move forward
+    if (action === 'approve_settlement') {
+      dispatch({ type: 'SETTLEMENT_DONE', jobId: _jobId })
+      setToast('Vyúčtování potvrzeno')
+      setTimeout(() => dispatch({ type: 'BACK_TO_DASHBOARD' }), 1000)
+      return true
+    }
+
+    // View invoice — show demo settlement modal
+    if (action === 'view_invoice') {
       setShowSettlementModal(true)
       return true
     }
