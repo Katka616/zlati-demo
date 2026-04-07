@@ -734,23 +734,33 @@ export const WALKTHROUGH_STEPS: Record<string, { sk: WalkthroughStep[]; cz: Walk
 
   '/dispatch/demo': {
     sk: [
-      { target: 'demo-job-list', title: 'Vaše zákazky', description: 'Každá karta predstavuje zákazku v inom stave — od naplánovanej po dokončenú. Kliknite na ľubovoľnú a pozrite si, ako vyzerá práca v aplikácii.', position: 'bottom' },
-      { target: 'bottom-nav', title: 'Navigácia v aplikácii', description: 'Domov = prehľad, Ponuky = nové zákazky, Zákazky = kompletný zoznam, Kalendár = plánovanie, Správy = chat.', position: 'top' },
-      { target: 'job-customer-card', title: 'Karta zákazníka', description: 'Meno, adresa a kontakt zákazníka. Odtiaľto sa priamo navigujete na miesto, zavoláte zákazníkovi alebo otvoríte chat s dispečerom.', position: 'bottom' },
-      { target: 'job-status-chip', title: 'Priebeh zákazky', description: 'Prehľad fáz zákazky:\n\n1. Príjazd — navigujte sa na miesto\n2. Diagnostika — odfoťte problém\n3. Odhad — zadajte materiál a hodiny\n4. Oprava — pracujte na oprave\n5. Protokol — vyplňte protokol s podpisom klienta\n6. Faktúra — systém vygeneruje faktúru automaticky', position: 'bottom' },
-      { target: 'job-info-sections', title: 'Detaily a diagnostika', description: 'Tu nájdete:\n\n• Detaily zákazky — kategória, poisťovňa, číslo\n• Informácie od klienta — popis problému z diagnostického formulára\n• AI Diagnostika — automatický návrh opravy, postupu a materiálu\n• Dokumenty — protokoly a fotky\n\nKliknutím na sekciu ju rozbalíte alebo zbalíte.', position: 'bottom' },
-      { target: 'job-action-button', title: 'Hlavné tlačidlo', description: 'Zlaté tlačidlo dole vždy ukazuje ďalší krok. Stačí kliknúť a zákazka sa posunie ďalej.\n\nAk čakáte na schválenie od operátora alebo klienta, tlačidlo pulzuje a informuje vás o stave.', position: 'top' },
+      { target: 'demo-job-list', title: 'Vaše zákazky', description: 'Každá karta predstavuje zákazku v inom stave. Kliknite na ľubovoľnú a pozrite si detaily.', position: 'bottom' },
+      { target: 'bottom-nav', title: 'Navigácia', description: 'Domov, Ponuky, Zákazky, Kalendár, Správy — rovnako ako v reálnej aplikácii.', position: 'top' },
     ],
     cz: [
-      { target: 'demo-job-list', title: 'Vaše zakázky', description: 'Každá karta představuje zakázku v jiném stavu — od naplánované po dokončenou. Klikněte na libovolnou a podívejte se, jak vypadá práce v aplikaci.', position: 'bottom' },
-      { target: 'bottom-nav', title: 'Navigace v aplikaci', description: 'Domů = přehled, Nabídky = nové zakázky, Zakázky = kompletní seznam, Kalendář = plánování, Zprávy = chat.', position: 'top' },
-      { target: 'job-customer-card', title: 'Karta zákazníka', description: 'Jméno, adresa a kontakt zákazníka. Odtud se přímo navigujete na místo, zavoláte zákazníkovi nebo otevřete chat s dispečerem.', position: 'bottom' },
-      { target: 'job-status-chip', title: 'Průběh zakázky', description: 'Přehled fází zakázky:\n\n1. Příjezd — navigace na místo\n2. Diagnostika — fotky problému\n3. Odhad ceny — materiál a hodiny\n4. Schválení — klient schvaluje doplatek přes SMS odkaz na svém mobilu\n5. Oprava — práce na zakázce\n6. Protokol — klient podepíše elektronicky na svém mobilu\n7. Faktura — systém vygeneruje automaticky', position: 'bottom' },
-      { target: 'job-info-sections', title: 'Detaily a AI diagnostika', description: 'Zde najdete:\n\n• Detaily zakázky — kategorie, pojišťovna, číslo\n• Informace od klienta — popis problému\n• AI Diagnostika — automatický návrh opravy, postupu a potřebného materiálu\n• Dokumenty — protokoly a fotky\n\nKliknutím na sekci ji rozbalíte nebo sbalíte.', position: 'bottom' },
-      { target: 'job-action-button', title: 'Cenový odhad', description: 'Po diagnostice zadáte odhad:\n• Počet hodin práce\n• Km na místo (GPS měření)\n• Materiál — vyberete z katalogu nebo přidáte vlastní\n\nAplikace automaticky spočítá cenu podle vašich sazeb.\n\nPokud klient musí doplatit nad rámec pojistky, dostane SMS s odkazem na portál, kde doplatek schválí nebo odmítne — přímo na svém mobilu.', position: 'top' },
-      { target: 'job-action-button', title: 'Protokol a podpis klienta', description: 'Po dokončení práce vyplníte protokol:\n• Popis provedené práce\n• Použitý materiál (předvyplněný z odhadu)\n• Fotky před a po opravě\n\nKlient dostane SMS s odkazem na portál, kde si protokol přečte a podepíše elektronicky na svém mobilu.\n\nNemusíte tisknout papíry ani čekat na podpis na místě.', position: 'top' },
-      { target: 'job-action-button', title: 'Vyúčtování', description: 'Po protokolu potvrdíte finální údaje:\n• Skutečné hodiny (mohou se lišit od odhadu)\n• Skutečné km\n• Finální materiál\n\nPokud se něco změnilo oproti odhadu, jednoduše opravíte. Systém přepočítá cenu automaticky. My vám pošleme přehled ke kontrole.', position: 'top' },
-      { target: 'job-action-button', title: 'Fakturace', description: 'Po vyúčtování máte 2 možnosti:\n\n• Vygenerovat fakturu — aplikace vytvoří fakturu automaticky z vašich sazeb. Zadáte vlastní variabilní symbol. K faktuře dostanete i soubor pro účetní (ISDOC).\n\n• Nahrát vlastní — pokud fakturujete přes vlastní systém, jednoduše nahrajete PDF.\n\nÚhrada od nás standardně do 14 dnů.', position: 'top' },
+      { target: 'demo-job-list', title: 'Vaše zakázky', description: 'Každá karta představuje zakázku v jiném stavu. Klikněte na libovolnou a podívejte se na detail.', position: 'bottom' },
+      { target: 'bottom-nav', title: 'Navigace', description: 'Domů, Nabídky, Zakázky, Kalendář, Zprávy — stejné jako v reálné aplikaci.', position: 'top' },
+    ],
+  },
+
+  '/dispatch/demo/job': {
+    sk: [
+      { target: 'job-customer-card', title: 'Zákazník', description: 'Meno, adresa a kontakt. Navigácia, volanie a chat jedným kliknutím.', position: 'bottom' },
+      { target: 'job-status-chip', title: 'Priebeh zákazky', description: '1. Príjazd\n2. Diagnostika\n3. Odhad ceny\n4. Schválenie klientom\n5. Oprava\n6. Protokol + podpis\n7. Faktúra', position: 'bottom' },
+      { target: 'job-info-sections', title: 'Detaily a AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky. Informácie od klienta, dokumenty a fotky.', position: 'bottom' },
+      { target: 'job-action-button', title: 'Cenový odhad', description: 'Hodiny, km (GPS), materiál z katalógu. Ak klient dopláca — schvaľuje cez SMS na mobile.', position: 'top' },
+      { target: 'job-action-button', title: 'Protokol', description: 'Popis práce, materiál, fotky. Klient podpíše elektronicky na svojom mobile cez SMS odkaz.', position: 'top' },
+      { target: 'job-action-button', title: 'Vyúčtovanie', description: 'Skutočné hodiny, km, materiál. Systém prepočíta automaticky.', position: 'top' },
+      { target: 'job-action-button', title: 'Faktúra', description: 'Automatická faktúra + ISDOC pre účtovníčku. Vlastný variabilný symbol. Úhrada do 14 dní.', position: 'top' },
+    ],
+    cz: [
+      { target: 'job-customer-card', title: 'Zákazník', description: 'Jméno, adresa a kontakt. Navigace, volání a chat jedním kliknutím.', position: 'bottom' },
+      { target: 'job-status-chip', title: 'Průběh zakázky', description: '1. Příjezd\n2. Diagnostika\n3. Odhad ceny\n4. Schválení klientem (SMS)\n5. Oprava\n6. Protokol + podpis\n7. Faktura', position: 'bottom' },
+      { target: 'job-info-sections', title: 'Detaily a AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky. Informace od klienta, dokumenty a fotky.', position: 'bottom' },
+      { target: 'job-action-button', title: 'Cenový odhad', description: 'Hodiny, km (GPS měření), materiál z katalogu.\n\nPokud klient musí doplatit — schvaluje přes SMS odkaz na svém mobilu.', position: 'top' },
+      { target: 'job-action-button', title: 'Protokol a podpis', description: 'Popis práce, materiál, fotky před a po.\n\nKlient podepíše elektronicky na svém mobilu přes SMS odkaz. Žádné papíry.', position: 'top' },
+      { target: 'job-action-button', title: 'Vyúčtování', description: 'Skutečné hodiny, km, materiál.\n\nPokud se něco změnilo oproti odhadu, jednoduše opravíte. Systém přepočítá automaticky.', position: 'top' },
+      { target: 'job-action-button', title: 'Fakturace', description: 'Automatická faktura z vašich sazeb. Zadáte vlastní variabilní symbol. K faktuře dostanete soubor pro účetní (ISDOC).\n\nNebo nahrajete vlastní PDF.\n\nÚhrada do 14 dnů.', position: 'top' },
     ],
   },
 

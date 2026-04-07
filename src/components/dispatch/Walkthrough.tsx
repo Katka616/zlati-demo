@@ -18,6 +18,8 @@ import { getTranslation } from '@/lib/i18n'
 interface Props {
   technicianId: number | undefined
   lang?: Lang
+  /** Override pathname for walkthrough step lookup (e.g. '/dispatch/demo/job') */
+  overridePathname?: string
 }
 
 interface SpotlightRect {
@@ -27,9 +29,10 @@ interface SpotlightRect {
   height: number
 }
 
-export default function Walkthrough({ technicianId, lang = 'sk' }: Props) {
+export default function Walkthrough({ technicianId, lang = 'sk', overridePathname }: Props) {
   const t = (key: string) => getTranslation(lang, key)
-  const pathname = usePathname()
+  const realPathname = usePathname()
+  const pathname = overridePathname || realPathname
   const steps = getWalkthroughSteps(pathname, lang)
   const { shouldShow, currentStep, totalSteps, step, next, skip, reset } = useWalkthrough(
     pathname,
@@ -106,6 +109,9 @@ export default function Walkthrough({ technicianId, lang = 'sk' }: Props) {
     const gap = 16 // space between tooltip and spotlight
     const vw = window.innerWidth
     const vh = window.innerHeight
+    // Safe area for mobile notch/dynamic island (iPhone, Samsung etc.)
+    const safeTop = Math.max(60, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat') || '0', 10) + 50)
+    const safeBottom = 16
 
     let top: number
     let left: number
@@ -115,7 +121,7 @@ export default function Walkthrough({ technicianId, lang = 'sk' }: Props) {
         top = rect.bottom + padding + gap
         left = Math.max(16, Math.min(rect.left + rect.width / 2 - tooltipWidth / 2, vw - tooltipWidth - 16))
         // If overflows bottom, flip to top
-        if (top + tooltipHeight > vh - 16) {
+        if (top + tooltipHeight > vh - safeBottom) {
           top = rect.top - padding - tooltipHeight - gap
         }
         break
@@ -123,22 +129,25 @@ export default function Walkthrough({ technicianId, lang = 'sk' }: Props) {
         top = rect.top - padding - tooltipHeight - gap
         left = Math.max(16, Math.min(rect.left + rect.width / 2 - tooltipWidth / 2, vw - tooltipWidth - 16))
         // If overflows top, flip to bottom
-        if (top < 16) {
+        if (top < safeTop) {
           top = rect.bottom + padding + gap
         }
         break
       case 'left':
-        top = Math.max(16, Math.min(rect.top + rect.height / 2 - tooltipHeight / 2, vh - tooltipHeight - 16))
+        top = Math.max(safeTop, Math.min(rect.top + rect.height / 2 - tooltipHeight / 2, vh - tooltipHeight - safeBottom))
         left = Math.max(16, rect.left - tooltipWidth - gap)
         break
       case 'right':
-        top = Math.max(16, Math.min(rect.top + rect.height / 2 - tooltipHeight / 2, vh - tooltipHeight - 16))
+        top = Math.max(safeTop, Math.min(rect.top + rect.height / 2 - tooltipHeight / 2, vh - tooltipHeight - safeBottom))
         left = Math.min(rect.right + gap, vw - tooltipWidth - 16)
         break
       default:
         top = rect.bottom + gap
         left = 16
     }
+
+    // Final clamp — never go above safe area or below viewport
+    top = Math.max(safeTop, Math.min(top, vh - tooltipHeight - safeBottom))
 
     setTooltipStyle({
       position: 'fixed',

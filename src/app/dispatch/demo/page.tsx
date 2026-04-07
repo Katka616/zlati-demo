@@ -910,40 +910,10 @@ export default function DemoPage() {
     const statusBadge = getStatusBadge(activeJob.crmStep ?? 2, activeJob.techPhase)
 
     return (
+      <>
       <MobileFrame>
       <div className="dispatch-page" data-theme="dark">
         {toast && <DemoToast message={toast} onHide={() => setToast(null)} />}
-
-        {/* Back button overlay */}
-        <div style={{
-          position: 'fixed',
-          top: 12,
-          left: 12,
-          zIndex: 200,
-        }}>
-          <button
-            onClick={() => dispatch({ type: 'BACK_TO_DASHBOARD' })}
-            style={{
-              background: 'rgba(0,0,0,0.5)',
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 10,
-              padding: '8px 14px',
-              color: '#fff',
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontFamily: 'Montserrat, sans-serif',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
-            Přehled
-          </button>
-        </div>
 
         <ActiveJobFullscreen
           job={activeJob}
@@ -957,22 +927,23 @@ export default function DemoPage() {
           onJobUpdated={() => {/* no-op in demo */}}
         />
 
-        {showProtocolModal && (
-          <DemoProtocolModal
-            onDone={handleProtocolDone}
-            onClose={() => setShowProtocolModal(false)}
-          />
-        )}
-
-        {showSettlementModal && (
-          <DemoSettlementModal
-            onDone={handleSettlementDone}
-            onClose={() => setShowSettlementModal(false)}
-          />
-        )}
         <DemoBottomBar onToast={setToast} onHome={() => dispatch({ type: 'BACK_TO_DASHBOARD' })} />
       </div>
       </MobileFrame>
+      {showProtocolModal && (
+        <DemoProtocolModal
+          onDone={handleProtocolDone}
+          onClose={() => setShowProtocolModal(false)}
+        />
+      )}
+      {showSettlementModal && (
+        <DemoSettlementModal
+          onDone={handleSettlementDone}
+          onClose={() => setShowSettlementModal(false)}
+        />
+      )}
+      <Walkthrough technicianId={99999} lang={LANG} overridePathname="/dispatch/demo/job" />
+      </>
     )
   }
 
