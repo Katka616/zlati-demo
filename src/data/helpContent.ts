@@ -755,8 +755,8 @@ export const WALKTHROUGH_STEPS: Record<string, { sk: WalkthroughStep[]; cz: Walk
     ],
     cz: [
       { target: 'job-customer-card', title: 'Zákazník', description: 'Jméno, adresa a kontakt. Navigace, volání a chat jedním kliknutím.', position: 'bottom' },
-      { target: 'job-status-chip', title: 'Průběh zakázky', description: '1. Příjezd\n2. Diagnostika\n3. Odhad ceny\n4. Schválení klientem (SMS)\n5. Oprava\n6. Protokol + podpis\n7. Faktura', position: 'bottom' },
-      { target: 'job-info-sections', title: 'Detaily a AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky. Informace od klienta, dokumenty a fotky.', position: 'bottom' },
+      { target: 'job-status-chip', title: 'Průběh zakázky', description: '1. Příjezd\n2. Diagnostika\n3. Odhad ceny\n4. Schválení klientem (SMS)\n5. Oprava\n6. Protokol + podpis\n7. Faktura', position: 'top' },
+      { target: 'job-info-sections', title: 'Detaily a AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky. Informace od klienta, dokumenty a fotky.', position: 'top' },
       { target: 'job-action-button', title: 'Cenový odhad', description: 'Hodiny, km (GPS měření), materiál z katalogu.\n\nPokud klient musí doplatit — schvaluje přes SMS odkaz na svém mobilu.', position: 'top' },
       { target: 'job-action-button', title: 'Protokol a podpis', description: 'Popis práce, materiál, fotky před a po.\n\nKlient podepíše elektronicky na svém mobilu přes SMS odkaz. Žádné papíry.', position: 'top' },
       { target: 'job-action-button', title: 'Vyúčtování', description: 'Skutečné hodiny, km, materiál.\n\nPokud se něco změnilo oproti odhadu, jednoduše opravíte. Systém přepočítá automaticky.', position: 'top' },
