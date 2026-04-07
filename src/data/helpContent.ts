@@ -746,13 +746,19 @@ export const WALKTHROUGH_STEPS: Record<string, { sk: WalkthroughStep[]; cz: Walk
   '/dispatch/demo/job': {
     sk: [
       { target: 'job-customer-card', title: 'Zákazník', description: 'Meno, adresa a kontakt. Navigácia, volanie a chat jedným kliknutím.', position: 'bottom' },
-      { target: 'job-info-sections', title: 'Detaily a AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky. Informácie od klienta, dokumenty a fotky.', position: 'top' },
-      { target: 'job-action-button', title: 'Ako to funguje', description: 'Zlaté tlačidlo posúva zákazku ďalej:\n\n1. Odhad ceny — hodiny, km, materiál\n2. Klient schvaľuje doplatok cez SMS\n3. Protokol — klient podpíše na mobile\n4. Vyúčtovanie — systém prepočíta\n5. Faktúra — automatická + ISDOC\n\nÚhrada do 14 dní.', position: 'top' },
+      { target: 'job-info-sections', title: 'AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky podľa popisu problému od klienta.', position: 'top' },
+      { target: 'job-action-button', title: 'Odhad ceny', description: 'Zadáte hodiny, km a materiál. Appka spočíta cenu podľa vašich sadzieb. Ak klient dopláca, schváli to vo svojom portáli.', position: 'top' },
+      { target: 'job-action-button', title: 'Protokol', description: 'Po oprave vyplníte popis práce a materiál. Klient podpíše protokol vo svojom portáli na mobile.', position: 'top' },
+      { target: 'job-action-button', title: 'Vyúčtovanie', description: 'Potvrdíte skutočné hodiny, km a materiál. Systém prepočíta cenu automaticky.', position: 'top' },
+      { target: 'job-action-button', title: 'Faktúra', description: 'Appka vygeneruje faktúru automaticky. Zadáte variabilný symbol. K faktúre dostanete ISDOC pre účtovníčku. Úhrada každý piatok.', position: 'top' },
     ],
     cz: [
       { target: 'job-customer-card', title: 'Zákazník', description: 'Jméno, adresa a kontakt. Navigace, volání a chat jedním kliknutím.', position: 'bottom' },
-      { target: 'job-info-sections', title: 'Detaily a AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky. Informace od klienta, dokumenty a fotky.', position: 'top' },
-      { target: 'job-action-button', title: 'Jak to funguje', description: 'Zlaté tlačítko posunuje zakázku dál:\n\n1. Odhad ceny — hodiny, km, materiál\n2. Klient schvaluje doplatek přes SMS\n3. Protokol — klient podepíše na mobilu\n4. Vyúčtování — systém přepočítá\n5. Faktura — automatická + ISDOC pro účetní\n\nZadáte vlastní variabilní symbol.\nÚhrada do 14 dnů.', position: 'top' },
+      { target: 'job-info-sections', title: 'AI diagnostika', description: 'AI navrhne opravu, postup a materiál automaticky podle popisu problému od klienta.', position: 'top' },
+      { target: 'job-action-button', title: 'Odhad ceny', description: 'Zadáte hodiny, km a materiál. Aplikace spočítá cenu podle vašich sazeb. Pokud klient doplácí, schválí to ve svém portálu.', position: 'top' },
+      { target: 'job-action-button', title: 'Protokol', description: 'Po opravě vyplníte popis práce a materiál. Klient podepíše protokol ve svém portálu na mobilu.', position: 'top' },
+      { target: 'job-action-button', title: 'Vyúčtování', description: 'Potvrdíte skutečné hodiny, km a materiál. Systém přepočítá cenu automaticky.', position: 'top' },
+      { target: 'job-action-button', title: 'Fakturace', description: 'Aplikace vygeneruje fakturu automaticky. Zadáte variabilní symbol. K faktuře dostanete ISDOC pro účetní. Úhrada každý pátek.', position: 'top' },
     ],
   },
 
