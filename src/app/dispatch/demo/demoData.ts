@@ -118,7 +118,7 @@ export const DEMO_JOBS: DispatchJob[] = [
     name: 'Výměna zásuvky',
     referenceNumber: 'ZR-DEMO-002',
     insurance: 'Pojišťovna',
-    category: '03. Electrician',
+    category: '10. Electrician',
     customerAddress: 'Korunní 88',
     customerCity: 'Praha 10',
     customerName: 'Marie Dvořáková',
@@ -168,7 +168,7 @@ export const DEMO_JOBS: DispatchJob[] = [
         scenarios: [
           {
             id: 'drain_clogged_siphon',
-            category: '06',
+            category: '08',
             title: 'Ucpaný sifon',
             probability: 70,
             cause: 'Sifon je ucpaný nečistotami (vlasy, mýdlo). Běžný problém v koupelnách.',
@@ -185,7 +185,7 @@ export const DEMO_JOBS: DispatchJob[] = [
           },
           {
             id: 'drain_blocked_pipe',
-            category: '06',
+            category: '08',
             title: 'Ucpané odpadní potrubí',
             probability: 25,
             cause: 'Ucpávka je hlouběji v odpadním potrubí, mimo dosah sifonu.',
